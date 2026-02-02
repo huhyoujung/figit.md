@@ -1,0 +1,34 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="128" height="128" rx="24" fill="#1E1E1E"/>
+
+  <!-- Figma-style stacked shapes with Git branch inside -->
+  <g transform="translate(32, 20)">
+    <!-- Top section - Figma red/orange -->
+    <rect x="16" y="0" width="32" height="28" rx="8" fill="#F24E1E"/>
+
+    <!-- Middle left - Figma purple -->
+    <rect x="0" y="30" width="32" height="28" rx="8" fill="#A259FF"/>
+
+    <!-- Middle right - Figma blue -->
+    <rect x="32" y="30" width="32" height="28" rx="8" fill="#1ABCFE"/>
+
+    <!-- Bottom - Figma green -->
+    <rect x="16" y="60" width="32" height="28" rx="8" fill="#0ACF83"/>
+  </g>
+
+  <!-- Git branch overlay -->
+  <g transform="translate(64, 64)">
+    <!-- Main branch line -->
+    <line x1="0" y1="-30" x2="0" y2="30" stroke="white" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Side branch -->
+    <path d="M0 -8 Q8 -8 12 -18" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+    <!-- Commit dots -->
+    <circle cx="0" cy="-24" r="5" fill="white"/>
+    <circle cx="0" cy="0" r="5" fill="white"/>
+    <circle cx="0" cy="24" r="5" fill="white"/>
+    <circle cx="12" cy="-18" r="4" fill="white"/>
+  </g>
+</svg>

@@ -1,0 +1,35 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <rect width="128" height="128" rx="28" fill="url(#modern-bg)"/>
+
+  <!-- Combined logo mark -->
+  <g transform="translate(64, 64)">
+    <!-- Figma "F" shape abstracted -->
+    <path d="M-20 -32 L-20 32 M-20 0 L8 0" stroke="url(#stroke-gradient)" stroke-width="8" stroke-linecap="round"/>
+
+    <!-- Git branch from F -->
+    <circle cx="-20" cy="-32" r="7" fill="#FF7262"/>
+    <circle cx="-20" cy="0" r="7" fill="#A259FF"/>
+    <circle cx="-20" cy="32" r="7" fill="#0ACF83"/>
+
+    <!-- Branch extending right -->
+    <path d="M-20 0 Q0 0 16 -20" stroke="white" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="16" cy="-20" r="6" fill="#1ABCFE"/>
+
+    <!-- Another branch -->
+    <path d="M-20 16 Q4 16 20 8" stroke="white" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <circle cx="20" cy="8" r="6" fill="#F24E1E"/>
+  </g>
+
+  <defs>
+    <linearGradient id="modern-bg" x1="0" y1="0" x2="128" y2="128">
+      <stop offset="0%" stop-color="#2C2C2C"/>
+      <stop offset="100%" stop-color="#1A1A1A"/>
+    </linearGradient>
+    <linearGradient id="stroke-gradient" x1="-20" y1="-32" x2="-20" y2="32">
+      <stop offset="0%" stop-color="#FF7262"/>
+      <stop offset="50%" stop-color="#A259FF"/>
+      <stop offset="100%" stop-color="#0ACF83"/>
+    </linearGradient>
+  </defs>
+</svg>

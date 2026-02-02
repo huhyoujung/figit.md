@@ -1,0 +1,17 @@
+{
+  "name": "Figit - GitHub Markdown Viewer",
+  "id": "figit-github-markdown-viewer",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": [
+      "api.github.com",
+      "raw.githubusercontent.com"
+    ]
+  },
+  "documentAccess": "dynamic-page"
+}
