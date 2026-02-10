@@ -4,6 +4,7 @@ export interface Settings {
   githubToken: string;
   defaultOwner?: string;
   defaultRepo?: string;
+  pageWidth?: number; // Width of the page in pixels (default: 520)
 }
 
 export interface GitHubFile {

@@ -20,7 +20,7 @@ interface CurrentFile {
 
 function App() {
   const [view, setView] = useState<View>('main');
-  const [settings, setSettings] = useState<Settings>({ githubToken: '' });
+  const [settings, setSettings] = useState<Settings>({ githubToken: '', pageWidth: 520 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -151,7 +151,8 @@ function App() {
         type: 'insert-markdown',
         html: htmlContent,
         fileName: currentFile.name,
-        repoInfo: `${currentFile.repo.owner}/${currentFile.repo.repo}`
+        repoInfo: `${currentFile.repo.owner}/${currentFile.repo.repo}`,
+        pageWidth: settings.pageWidth || 520
       }
     }, '*');
 
@@ -181,6 +182,22 @@ function App() {
             <li>Select scope: <code>repo</code> (for private repos)</li>
             <li>Copy and paste the token here</li>
           </ol>
+        </div>
+      </div>
+      <div className="form-group">
+        <label htmlFor="pageWidth">Page Width (pixels)</label>
+        <input
+          type="number"
+          id="pageWidth"
+          value={settings.pageWidth || 520}
+          onChange={(e) => setSettings({ ...settings, pageWidth: parseInt(e.target.value) || 520 })}
+          placeholder="520"
+          min="300"
+          max="1200"
+          step="10"
+        />
+        <div className="hint">
+          <p>Set the width of the markdown page in Figma (300-1200px). Default: 520px</p>
         </div>
       </div>
       <div className="button-group">

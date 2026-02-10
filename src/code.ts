@@ -88,7 +88,7 @@ figma.ui.onmessage = async (msg: { type: string; [key: string]: any }) => {
 
     case 'insert-markdown':
       try {
-        await insertMarkdownToCanvas(msg.html, msg.fileName, msg.repoInfo);
+        await insertMarkdownToCanvas(msg.html, msg.fileName, msg.repoInfo, msg.pageWidth || 520);
       } catch (err: any) {
         console.error('Insert error:', err);
         figma.notify('Error: ' + (err.message || 'Failed to insert'), { error: true });
@@ -116,7 +116,7 @@ interface Block {
   rawText?: string; // for code blocks
 }
 
-async function insertMarkdownToCanvas(html: string, fileName: string, repoInfo: string) {
+async function insertMarkdownToCanvas(html: string, fileName: string, repoInfo: string, pageWidth: number = 520) {
   // Initialize fonts based on available system fonts
   await initializeFonts();
 
@@ -133,6 +133,10 @@ async function insertMarkdownToCanvas(html: string, fileName: string, repoInfo: 
   // Parse HTML to blocks
   const blocks = parseHtmlToBlocks(html);
 
+  // Calculate content width based on page width and padding
+  const horizontalPadding = 56; // 28px left + 28px right
+  const contentWidth = pageWidth - horizontalPadding;
+
   // Create main frame with auto-layout
   const frame = figma.createFrame();
   frame.name = "📄 " + fileName + " - Figit";
@@ -142,7 +146,7 @@ async function insertMarkdownToCanvas(html: string, fileName: string, repoInfo: 
   frame.layoutMode = 'VERTICAL';
   frame.primaryAxisSizingMode = 'AUTO';
   frame.counterAxisSizingMode = 'FIXED';
-  frame.resize(520, 100);
+  frame.resize(pageWidth, 100);
   frame.paddingTop = 24;
   frame.paddingBottom = 24;
   frame.paddingLeft = 28;
@@ -186,7 +190,7 @@ async function insertMarkdownToCanvas(html: string, fileName: string, repoInfo: 
   // Divider
   const divider = figma.createRectangle();
   divider.name = "Divider";
-  divider.resize(464, 1);
+  divider.resize(contentWidth, 1);
   divider.fills = [{ type: 'SOLID', color: { r: 0.9, g: 0.9, b: 0.9 } }];
   divider.layoutAlign = 'STRETCH';
   frame.appendChild(divider);
@@ -204,7 +208,7 @@ async function insertMarkdownToCanvas(html: string, fileName: string, repoInfo: 
   // Create content
   for (var i = 0; i < blocks.length; i++) {
     var block = blocks[i];
-    await renderBlock(contentFrame, block);
+    await renderBlock(contentFrame, block, contentWidth);
   }
 
   frame.appendChild(contentFrame);
@@ -459,23 +463,23 @@ function decodeHtmlEntities(text: string): string {
     });
 }
 
-async function renderBlock(container: FrameNode, block: Block) {
+async function renderBlock(container: FrameNode, block: Block, contentWidth: number) {
   if (block.type === 'header') {
-    await renderHeader(container, block);
+    await renderHeader(container, block, contentWidth);
   } else if (block.type === 'codeBlock') {
-    await renderCodeBlock(container, block);
+    await renderCodeBlock(container, block, contentWidth);
   } else if (block.type === 'blockquote') {
-    await renderBlockquote(container, block);
+    await renderBlockquote(container, block, contentWidth);
   } else if (block.type === 'listItem') {
-    await renderListItem(container, block);
+    await renderListItem(container, block, contentWidth);
   } else if (block.type === 'hr') {
-    await renderHr(container);
+    await renderHr(container, contentWidth);
   } else {
-    await renderParagraph(container, block);
+    await renderParagraph(container, block, contentWidth);
   }
 }
 
-async function renderHeader(container: FrameNode, block: Block) {
+async function renderHeader(container: FrameNode, block: Block, contentWidth: number) {
   var textNode = figma.createText();
   var fullText = '';
   for (var i = 0; i < block.segments.length; i++) {
@@ -490,13 +494,13 @@ async function renderHeader(container: FrameNode, block: Block) {
   textNode.fontSize = sizes[level] || 15;
   textNode.fills = [{ type: 'SOLID', color: { r: 0.1, g: 0.1, b: 0.1 } }];
   textNode.lineHeight = { value: 150, unit: 'PERCENT' };
-  textNode.resize(464, textNode.height);
+  textNode.resize(contentWidth, textNode.height);
   textNode.textAutoResize = 'HEIGHT';
 
   container.appendChild(textNode);
 }
 
-async function renderCodeBlock(container: FrameNode, block: Block) {
+async function renderCodeBlock(container: FrameNode, block: Block, contentWidth: number) {
   var codeFrame = figma.createFrame();
   codeFrame.name = "Code Block";
   codeFrame.fills = [{ type: 'SOLID', color: { r: 0.96, g: 0.97, b: 0.98 } }];
@@ -515,14 +519,14 @@ async function renderCodeBlock(container: FrameNode, block: Block) {
   codeText.fontSize = 12;
   codeText.fills = [{ type: 'SOLID', color: { r: 0.2, g: 0.25, b: 0.3 } }];
   codeText.lineHeight = { value: 165, unit: 'PERCENT' };
-  codeText.resize(432, codeText.height);
+  codeText.resize(contentWidth - 32, codeText.height); // contentWidth minus left+right padding
   codeText.textAutoResize = 'HEIGHT';
 
   codeFrame.appendChild(codeText);
   container.appendChild(codeFrame);
 }
 
-async function renderBlockquote(container: FrameNode, block: Block) {
+async function renderBlockquote(container: FrameNode, block: Block, contentWidth: number) {
   var quoteFrame = figma.createFrame();
   quoteFrame.name = "Blockquote";
   quoteFrame.fills = [{ type: 'SOLID', color: { r: 0.98, g: 0.98, b: 0.98 } }];
@@ -553,7 +557,7 @@ async function renderBlockquote(container: FrameNode, block: Block) {
   quoteText.fontSize = 13;
   quoteText.fills = [{ type: 'SOLID', color: { r: 0.35, g: 0.35, b: 0.4 } }];
   quoteText.lineHeight = { value: 165, unit: 'PERCENT' };
-  quoteText.resize(420, quoteText.height);
+  quoteText.resize(contentWidth - 34, quoteText.height); // contentWidth minus border spacing and padding
   quoteText.textAutoResize = 'HEIGHT';
 
   quoteFrame.appendChild(quoteText);
@@ -564,7 +568,7 @@ async function renderBlockquote(container: FrameNode, block: Block) {
   container.appendChild(quoteFrame);
 }
 
-async function renderListItem(container: FrameNode, block: Block) {
+async function renderListItem(container: FrameNode, block: Block, contentWidth: number) {
   var listFrame = figma.createFrame();
   listFrame.name = "List Item";
   listFrame.fills = [];
@@ -582,24 +586,32 @@ async function renderListItem(container: FrameNode, block: Block) {
   listFrame.appendChild(bullet);
 
   // Create rich text for list content
-  var textNode = await createRichText(block.segments, 440);
+  var textNode = await createRichText(block.segments, contentWidth - 24); // contentWidth minus bullet and spacing
   listFrame.appendChild(textNode);
 
   container.appendChild(listFrame);
 }
 
-async function renderHr(container: FrameNode) {
+async function renderHr(container: FrameNode, contentWidth: number) {
   var hr = figma.createRectangle();
   hr.name = "Horizontal Rule";
-  hr.resize(464, 1);
+  hr.resize(contentWidth, 1);
   hr.fills = [{ type: 'SOLID', color: { r: 0.85, g: 0.85, b: 0.85 } }];
   hr.layoutAlign = 'STRETCH';
   container.appendChild(hr);
 }
 
-async function renderParagraph(container: FrameNode, block: Block) {
-  var textNode = await createRichText(block.segments, 464);
+async function renderParagraph(container: FrameNode, block: Block, contentWidth: number) {
+  var textNode = await createRichText(block.segments, contentWidth);
   container.appendChild(textNode);
+}
+
+function isValidAbsoluteUrl(url: string): boolean {
+  if (!url || typeof url !== 'string') return false;
+
+  // Figma only supports http and https protocols
+  var trimmedUrl = url.trim();
+  return trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://');
 }
 
 async function createRichText(segments: InlineSegment[], width: number): Promise<TextNode> {
@@ -654,7 +666,11 @@ async function createRichText(segments: InlineSegment[], width: number): Promise
       if (seg.link) {
         textNode.setRangeFills(start, end, [{ type: 'SOLID', color: { r: 0.0, g: 0.45, b: 0.9 } }]);
         textNode.setRangeTextDecoration(start, end, 'UNDERLINE');
-        textNode.setRangeHyperlink(start, end, { type: 'URL', value: seg.link });
+
+        // Only set hyperlink if it's a valid absolute URL
+        if (isValidAbsoluteUrl(seg.link)) {
+          textNode.setRangeHyperlink(start, end, { type: 'URL', value: seg.link });
+        }
       }
     }
 
