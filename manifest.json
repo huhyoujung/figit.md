@@ -9,8 +9,8 @@
   "editorType": ["figma"],
   "networkAccess": {
     "allowedDomains": [
-      "api.github.com",
-      "raw.githubusercontent.com"
+      "https://api.github.com",
+      "https://raw.githubusercontent.com"
     ]
   },
   "documentAccess": "dynamic-page"
